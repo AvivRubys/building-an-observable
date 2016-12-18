@@ -1,0 +1,92 @@
+function nextDataCallback(data) {
+    context.log("Next: " + data)
+}
+
+function errorCallback(error) {
+    context.error(error)
+}
+
+function completeCallback() {
+    context.log("Done!")
+}
+
+function getSomeData(dataFn, errorFn, completeFn) {
+    [1,2,3,4,5,6,7,8].forEach(dataFn)
+}
+
+getSomeData(nextDataCallback,
+            errorCallback,
+            completeCallback)
+###
+let observer = {
+    next(data) {
+        context.log("Next: " + data)
+    },
+    error(error) {
+        context.error(error)
+    },
+    complete() {
+        context.log("Done!")
+    }
+}
+
+function getSomeData(output) {
+    [1,2,3,4,5,6,7,8].forEach(output.next)
+}
+
+getSomeData(observer)
+###
+let observer = {
+    next(data) {
+        context.log("Next: " + data)
+    },
+    error(error) {
+        context.error(error)
+    },
+    complete() {
+        context.log("Done!")
+    }
+}
+
+function subscribe(output) {
+    fetch('www.chickenemojis.com')
+        .then(output.next)
+        .catch(output.error);
+}
+
+subscribe(observer)
+###
+let observer = getPrintingObserver(context);
+
+function createObservable(subscribe) {
+    return {
+        subscribe: subscribe
+    }
+}
+
+let arrayObservable = createObservable(
+    function (output) {
+        [1,2,3,4,5,6,7,8].forEach(output.next)
+        output.complete()
+    }
+);
+
+arrayObservable.subscribe(observer)
+###
+let observer = getPrintingObserver(context);
+
+function createObservable(subscribe) {
+    return {
+        subscribe: subscribe
+    }
+}
+
+let fetchObservable = createObservable(
+    function (output) {
+        fetch('www.chickenemojis.com')
+            .then(output.next)
+            .catch(output.error);
+    }
+);
+
+fetchObservable.subscribe(observer)

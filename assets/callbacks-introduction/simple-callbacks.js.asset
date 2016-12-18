@@ -1,0 +1,13 @@
+let element = getButton(context);
+element.addEventListener('click', 
+    () => appendLine(context, "Clicked!"))
+###
+fetchSomeData().then(
+    () => appendLine(context, "Success!"),
+    (error) => appendLine(context, "Failure!")
+);
+###
+let stream = getStreamDataSomehow()
+stream.on('data', (data) => console.log(data))
+stream.on('error', (error) => console.error(error))
+stream.on('end', () => console.log('Done!'))

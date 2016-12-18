@@ -1,0 +1,81 @@
+function myOperator() {
+  let inputObservable = this;
+  let outputObservable = 
+    createObservable(/* something */)
+  
+  return outputObservable;
+}
+###
+function myOperator() {
+  let inputObservable = this;
+  let outputObservable = createObservable(
+    function (outputObserver) {
+      inputObservable.subscribe({
+        next: outputObserver.next,
+        error: outputObserver.error,
+        complete: outputObserver.complete
+      })
+    }
+  )
+
+  return outputObservable;
+}
+###
+function mapOperator(transformFn) {
+  let inputObservable = this;
+  let outputObservable = createObservable(
+    function (outputObserver) {
+      inputObservable.subscribe({
+        next: function (x) {
+          let y = transformFn(x)
+          outputObserver.next(y)
+        },
+        error: outputObserver.error,
+        complete: outputObserver.complete
+      })
+    }
+  )
+
+  return outputObservable;
+}
+###
+function filterOperator(predicateFn) {
+  let inputObservable = this;
+  let outputObservable = createObservable(
+    function (outputObserver) {
+      inputObservable.subscribe({
+        next: function (x) {
+          if (predicateFn(x)) {
+            outputObserver.next(x)
+          }
+        },
+        error: outputObserver.error,
+        complete: outputObserver.complete
+      })
+    }
+  )
+
+  return outputObservable;
+}
+###
+let observer = getPrintingObserver(context);
+
+function createObservable(subscribe) {
+    return {
+        subscribe: subscribe,
+        map: mapOperator,
+        filter: filterOperator
+    }
+}
+
+let arrayObservable = createObservable(
+    function (output) {
+        [1,2,3,4,5,6,7,8].forEach(output.next)
+        output.complete()
+    }
+);
+
+arrayObservable
+    //.map(x => x * 2)
+    //.filter(x => x !== 6)
+    .subscribe(observer)

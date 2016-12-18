@@ -7,7 +7,6 @@ import Rx, {Observable, Subject} from "rx";
 import { createComponent, createEventHandler } from "rx-recompose";
 import ReactDOM from "react-dom";
 import "rx-dom";
-require("./helpers/inject-op-tooltips");
 require("./index.css");
 
 // Import Spectacle Core tags
@@ -53,12 +52,14 @@ const images = {
 
 preloader(images);
 
-const theme = createTheme({
-  background: "#555a5f",
-  primary: "#555a5f",
-  secondary: "white",
-  rx: "#dddddd"
-});
+// const theme = createTheme({
+//   background: "#555a5f",
+//   primary: "#555a5f",
+//   secondary: "white",
+//   rx: "#dddddd"
+// });
+
+import {theme} from 'spectacle-theme-solarized-dark';
 
 const RxImports = {Rx, Observable, Subject};
 const ReactImports = {React, ReactDOM, Component};
@@ -94,268 +95,199 @@ const stocksImports = {
   }
 };
 
+function appendLine(element, line) {
+  element.textContent = line + "\n" + element.textContent;
+}
+
+function getPrintingObserver(context) {
+  return {
+    next(data) {
+        context.log("Next: " + data)
+    },
+    error(error) {
+        context.error(error)
+    },
+    complete() {
+        context.log("Done!")
+    }
+  }
+}
+
+function createObservable(subscribe) {
+  return {
+    subscribe,
+    map: mapOperator,
+    filter: filterOperator
+  }
+}
+
+function mapOperator(transformFn) {
+  let inputObservable = this;
+  let outputObservable = createObservable(
+    function (outputObserver) {
+      inputObservable.subscribe({
+        next: function (x) {
+          const y = transformFn(x)
+          outputObserver.next(y)
+        },
+        error: outputObserver.error,
+        complete: outputObserver.complete
+      })
+    }
+  )
+
+  return outputObservable;
+}
+
+function filterOperator(predicateFn) {
+  let inputObservable = this;
+  let outputObservable = createObservable(
+    function (outputObserver) {
+      inputObservable.subscribe({
+        next: function (x) {
+          if (predicateFn(x)) {
+            outputObserver.next(x)
+          }
+        },
+        error: outputObserver.error,
+        complete: outputObserver.complete
+      })
+    }
+  )
+
+  return outputObservable;
+}
+
 export default class Presentation extends React.Component {
   render() {
     return (
       <Spectacle theme={theme}>
         <Deck transition={["zoom", "slide"]} transitionDuration={500}>
-          <Slide transition={["zoom"]} bgColor="background" >
-            <Heading size={1} fit caps lineHeight={1} textColor="rx">
-              Reactive UI
+          <Slide transition={["zoom"]}>
+            <Heading size={10} fit caps lineHeight={1} textColor="rx">
+              Building your own Observable
             </Heading>
             <Heading size={1} fit caps textColor="rx">
-               With Rx and react
+               Understanding how Rx works by reimplementation
             </Heading>
-            <Link href="https://github.com/Yshayy/rx-react-meetup">
-              <Text bold caps textColor="tertiary">View on Github</Text>
-            </Link>
-            <Text textColor="secondary" textSize="1.5em" margin="20px 0px 0px" bold>yshay@soluto.com</Text>
+            <Text textColor="secondary" textSize="1.5em" margin="20px 0px 0px" bold>aviv@soluto.com</Text>
           </Slide>
-          <Slide transition={["slide"]} bgColor="background" notes="You can even put notes on your slide. How awesome is that?">
-            <Heading size={2} caps textColor="secondary" textFont="primary">
-              Agenda
-            </Heading>
-            <List>
-              <ListItem>Introduction to Rx</ListItem>
-              <ListItem>Building React UI</ListItem>
-              <Appear><ListItem>All the code is available online</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["slide"]} bgColor="background" notes="You can even put notes on your slide. How awesome is that?">
+          <Slide transition={["slide"]} notes="">
             <Heading size={2} caps textColor="secondary" textFont="primary">
               About me
             </Heading>
             <List>
-              <ListItem>Tech lead at Soluto</ListItem>
-              <Appear><ListItem>Enthusiastic Rx user for ~3 years</ListItem></Appear>
-              <Appear><ListItem>Architecture, design, programming languages and building stuff</ListItem></Appear>
-              <Appear><ListItem>Currently playing Uncharted 4: A Thief's End</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["slide"]} bgColor="background" notes="You can even put notes on your slide. How awesome is that?">
-            <Heading size={2} caps textColor="secondary" textFont="primary">
-              Rx in Soluto
-            </Heading>
-            <List>
-              <Appear><ListItem>Used everywhere web/mobile/backend/tools</ListItem></Appear>
-              <Appear><ListItem>Helped us solve complex problems elegantly</ListItem></Appear>
-              <Appear><ListItem>Changed our thinking approach to solving problems</ListItem></Appear>
-              <Appear><ListItem>Gave us alot of programming "WOW" moments</ListItem></Appear>
-              <Appear><ListItem>Improved our overall adoption of FP concepts</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["slide"]} bgColor="background" notes="You can even put notes on your slide. How awesome is that?">
-            <Heading size={4} caps fit textColor="secondary" textFont="primary">
-              Let's start with Rx!
-            </Heading>
-          </Slide>
-          <Slide>
-          <Heading size={4} caps textColor="secondary" textFont="primary">
-              What?
-          </Heading>
-          <iframe src="http://reactivex.io/" style={{width: "100%", height: 600}} />
-          </Slide>
-          <Slide>
-          <Heading size={4} caps textColor="secondary" textFont="primary">
-              What?
-          </Heading>
-          <List>
-            <ListItem>"An API for asynchronous programming with observable streams" (reactivex.io)</ListItem>
-            <Appear><ListItem>??</ListItem></Appear>
-            <Appear><ListItem>"Rx is a combination of the best ideas from the Observer pattern, the Iterator pattern, and functional programming"
-            (reactivex.io)
-            </ListItem></Appear>
-            <Appear><ListItem>????</ListItem></Appear>
+              <ListItem>Software Engineer at Soluto 💻</ListItem>
+              <Appear><ListItem>Interested in music 🎵, technology 💾, and I'd like to learn how to knit one day 💈</ListItem></Appear>
+              <Appear><ListItem>Currently playing way too much Overwatch 🎮</ListItem></Appear>
+              <Appear><ListItem>...Recently discovered emojis</ListItem></Appear>
             </List>
           </Slide>
           <Slide>
-            <Heading fit caps textColor="secondary" textFont="primary">
-                Rx is all about collections!
-            </Heading>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="<ul><li>talk about that</li><li>and that</li></ul>">
-              <div>
-              <Heading size={6} textColor="secondary">Array - Collection over space (memory based)</Heading>
-              <Runner code={require("raw!../assets/simple-collections/array.js.asset").split("###")} maxLines={8} >
-              <ConsoleOutput/>
-              </Runner>
-              </div>
+            <Heading caps textColor="secondary" textFont="primary">
+              <strike>Observables</strike>
+            </Heading><br/>
             <Appear>
-              <div>
-              <Heading size={6} textColor="secondary">Observable - Collection over time (event based)</Heading>
-              <Runner maxLines={8} code={require("raw!../assets/simple-collections/rx.js.asset").split("###")}
-                imports={{Observable}}
-              >
-              <ConsoleOutput/>
-              </Runner>
-              </div>
+              <Heading caps textColor="secondary" textFont="primary">
+                <strike>Observers</strike>
+              </Heading>
+            </Appear><br/>
+            <Appear>
+              <Heading caps fit textColor="secondary" textFont="primary">
+                Callbacks
+              </Heading>
             </Appear>
+          </Slide>
+          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="Everyone's first callback">
+              <div>
+                <Heading size={6} textColor="secondary">Our first callbacks</Heading>
+                <Runner code={require("raw!../assets/callbacks-introduction/simple-callbacks.js.asset").split("###")} maxLines={8}
+                  imports={{
+                    getButton: ({elems: {documentCallbackButton}}) => documentCallbackButton,
+                    appendLine: ({elems: {documentCallbackOutput}}, line) => appendLine(documentCallbackOutput, line)
+                  }}>
+                  <DomOutput>
+                    <button id="documentCallbackButton">Click me</button>
+                    <pre style={{maxHeight: 200, overflow: "auto"}} id="documentCallbackOutput"></pre>
+                  </DomOutput>
+                </Runner>
+              </div>
           </Slide>
           <Slide transition={["slide"]} bgDarken={0.75}>
             <Text size={1} textColor="secondary" >
-                If we look on Event streams as collections...
+                Extracting a general interface for callbacks
              </Text>
-             <Appear>
              <Text textColor="secondary">
-                We can use all our collection tools and knowledge to process events which lead us to...
+                Requires three handlers:
              </Text>
-             </Appear>
              <Appear>
-             <Text caps fit textColor="secondary">
-                Functional Programming!
-             </Text>
+              <List>
+                <ListItem>Next piece of data</ListItem>
+                <ListItem>Processing error</ListItem>
+                <ListItem>EOF</ListItem>
+              </List>
              </Appear>
           </Slide>
-          <Slide transition={["slide"]} bgDarken={0.75}>
-            <Text size={2} textColor="secondary" >
-                And that's the essence of RX and reactive programming/frp.
-             </Text>
+          <Slide transition={["slide"]} bgDarken={0.75} notes="Change getSomeData to subscribe">
+            <Runner code={require("raw!../assets/callbacks-introduction/generalizing.js.asset").split("###")} maxLines={18}
+              imports={{
+                fetch: () => new Promise((resolve) => setTimeout(() => resolve("Hello 🐣"), 1000)),
+                getPrintingObserver
+              }}>
+              <ConsoleOutput />
+            </Runner>
           </Slide>
-          <Slide transition={["slide"]} bgDarken={0.75}>
-            <Heading caps size={2} textColor="secondary" >
-                Definitions
+          <Slide transition={["slide"]} bgDarken={0.75} notes="Even though the Observable is running the show, the Observer's api dictates everything">
+            <Heading caps size={2} textColor="secondary">
+                Conclusions
              </Heading>
              <List>
-             <ListItem>Event stream == Observable</ListItem>
-             <ListItem>Operator - function that return observable from other observable like map, filter, etc...</ListItem>
+              <ListItem>Observer = Callback handler</ListItem>
+              <ListItem>Observable = Data provider to an observer</ListItem>
              </List>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={4} textColor="secondary" caps>Translate Example</Heading>
-            <Runner maxLines={15} code={require("raw!../assets/translate/translate.js.asset").split("###")}
-              imports={{...translateImports,
-                getInputElement:({elems:{translateExampleInput}}) => translateExampleInput,
-                getViewElement:({elems:{translateExampleOutput}}) => translateExampleOutput
-              }} >
-              <DomOutput>
-                  <input type="text" id="translateExampleInput" ></input>
-                  <pre style={{maxHeight: 200, overflow: "auto"}} id="translateExampleOutput"></pre>
-              </DomOutput>
+            <Heading caps>What did we lose?</Heading>
+            <List>
+              <ListItem>Collection tools<br/>
+                <List>
+                  <ListItem>&nbsp;&nbsp;Map</ListItem>
+                  <ListItem>&nbsp;&nbsp;Filter</ListItem>
+                  <ListItem>&nbsp;&nbsp;ForEach</ListItem>
+                </List>
+              </ListItem>
+            </List>
+          </Slide>
+          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="We lost utility we used to have, so let's see how we use collection operators on observables">
+            <Heading size={4} textColor="secondary" caps>Collection operators</Heading>
+            <Runner maxLines={10} code={require("raw!../assets/operators/collection.js.asset").split("###")}>
+              <ConsoleOutput />
            </Runner>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading caps>Rx timeline</Heading>
-            <List>
-              <ListItem>2007 - Rx is born based on dualizing Iterable/Iterator interfaces</ListItem>
-              <Appear><ListItem>2009 - Rx.Net Released </ListItem></Appear>
-              <Appear><ListItem>2010 - RxJs</ListItem></Appear>
-              <Appear><ListItem>2010 - IObserable & IObserver are standardized in .net 4</ListItem></Appear>
-              <Appear><ListItem>2012 - Rx get open-sourced</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide bgColor="primary" transitionDuration={0} >
-            <Heading size={2} caps>Rx timeline </Heading>
-            <List>
-              <ListItem>2012 - Work started on RxJava</ListItem>
-              <Appear><ListItem>2014 - RxJava 1.0</ListItem></Appear>
-              <Appear><ListItem>2015 - Reactive Streams for Java 9</ListItem></Appear>
-              <Appear><ListItem>2015 - Obserable in ECMAScript (stage 1)</ListItem></Appear>
-              <Appear><ListItem>2015 - RxJS is rebuilt from scratch (rxjs-5)</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide bgColor="primary" transitionDuration={0} >
-            <Heading size={2} caps>Rx timeline </Heading>
-            <List>
-              <ListItem>Ports in many languages from ruby to c++</ListItem>
-              <Appear><ListItem>Ports in many platforms</ListItem></Appear>
-              <Appear><ListItem>Many clones/heavily inspired libs especially in js world</ListItem></Appear>
-              <Appear><ListItem>bacon.js, kefir.js, highland.js, most.js, xtream.js</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={2} caps>Rx timeline</Heading>
-            <List>
-              <ListItem>Rx is a bit trending now but it's hardly new</ListItem>
-              <Appear><ListItem>Expect Observables to be everywhere in js future</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading caps fit>Rx ecosystem in React</Heading>
-            <List>
-              <Appear><ListItem>Many libs and approaches</ListItem></Appear>
-              <Appear><ListItem>rx-recompose - build HOC with rx</ListItem></Appear>
-              <Appear><ListItem>react-cycle - mvi</ListItem></Appear>
-              <Appear><ListItem>react-combinators - use observables as props</ListItem></Appear>
-              <Appear><ListItem>flux implementations</ListItem></Appear>
-              <Appear><ListItem>Redux middleware</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={5} textColor="secondary" caps>React Example - Clock</Heading>
-            <Runner maxLines={20} code={require("raw!../assets/react/clock.js.asset").split("###")}
-              imports={{...RxImports, ...ReactImports,
-                getAppContainer: ({elems: {reactClockAppContainer}}) => reactClockAppContainer
-              }} >
-              <DomOutput>
-                  <div id="reactClockAppContainer" ></div>
-              </DomOutput>
+            <Heading size={4} textColor="secondary" caps>Operators</Heading>
+            <Runner maxLines={18} code={require("raw!../assets/operators/basic.js.asset").split("###")}
+              imports={{
+                getPrintingObserver,
+                mapOperator,
+                filterOperator,
+                createObservable: (subscribe) => ({subscribe})
+              }}>
+              <ConsoleOutput />
            </Runner>
           </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={5} textColor="secondary" caps>Scan operator</Heading>
-            <Runner imports={{Observable}} code={require("raw!../assets/scan/scan.js.asset").split("###")} maxLines={8} >
-              <ConsoleOutput/>
-              </Runner>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={5} textColor="secondary" caps>React Example - Counter</Heading>
-            <Runner maxLines={20} code={require("raw!../assets/react/counter.js.asset").split("###")}
-              imports={{...RxImports, ...ReactImports, ...RecomposeImports,
-                getAppContainer: ({elems: {reactCounterAppContainer}}) => reactCounterAppContainer
-              }} >
-              <DomOutput>
-                  <div id="reactCounterAppContainer" ></div>
-              </DomOutput>
-           </Runner>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading size={5} textColor="secondary" caps>React Example - Stocks</Heading>
-            <Runner maxLines={20} code={[stockSources[stockSources.length - 1], ...stockSources]}
-              imports={{...stocksImports,
-                getAppContainer: ({elems: {reactStocksAppContainer}}) => reactStocksAppContainer
-              }} >
-              <DomOutput>
-                  <div id="reactStocksAppContainer" ></div>
-              </DomOutput>
-           </Runner>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Text textSize="3.5rem" textColor="secondary">Rx can be used everywhere, but it really shines in</Text>
-            <List>
-              <Appear><ListItem>Things that related to time</ListItem></Appear>
-              <Appear><ListItem>Realtime UI for live data</ListItem></Appear>
-              <Appear><ListItem>Complex user intents - drag&drop, long presses, gestures...</ListItem></Appear>
-              <Appear><ListItem>Complex async processing</ListItem></Appear>
-              <Appear><ListItem>Abstraction</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading>But beware...</Heading>
-            <List>
-              <Appear><ListItem>Rx has a steep learning curve</ListItem></Appear>
-              <Appear><ListItem>Rx can sometime be too smart for it's own good</ListItem></Appear>
-              <Appear><ListItem>Rx require a lot of commitment for a library</ListItem></Appear>
-              <Appear><ListItem>Don't give up on Promises</ListItem></Appear>
-              <Appear><ListItem>Don't settle with ugly Rx solutions</ListItem></Appear>
-              <Appear><ListItem>Don't forget to dispose your subscriptions</ListItem></Appear>
-            </List>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading>Soluto</Heading>
-            <List>
-              <Appear><ListItem>Help people enjoy technology</ListItem></Appear>
-              <Appear><ListItem>Support, knowledge, education, empowerment, insights, security</ListItem></Appear>
-              <Appear><ListItem>Run on multple platforms and devices</ListItem></Appear>
-              <Appear><ListItem>Scale of hundreds of millions</ListItem></Appear>
-              <Appear><ListItem>Organizing the first rx-israel meetup soon</ListItem></Appear>
-              <Appear><ListItem>And of course, We're hiring...</ListItem></Appear>
-            </List>
+          <Slide transition={["slide"]}>
+            <Heading caps size={2} textColor="secondary">
+                Operators as pure functions
+             </Heading>
+             <List>
+              <Appear><ListItem>TakeN/SkipN</ListItem></Appear>
+              <Appear><ListItem>Combining observables</ListItem></Appear>
+              <Appear><ListItem>FlatMap</ListItem></Appear>
+             </List>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
             <Heading caps fit>Questions</Heading>
-          </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading caps fit>Appendix</Heading>
           </Slide>
         </Deck>
       </Spectacle>

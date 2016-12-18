@@ -26,7 +26,8 @@
     "rx-dom": "^7.0.3",
     "rx-recompose": "^0.6.2",
     "spectacle": "^1.0.0",
-    "spectacle-code-slide": "^0.1.10"
+    "spectacle-code-slide": "^0.1.10",
+    "spectacle-theme-solarized-dark": "^1.0.2"
   },
   "devDependencies": {
     "autoprefixer-core": "^6.0.1",
