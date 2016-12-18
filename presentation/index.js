@@ -124,31 +124,42 @@ export default class Presentation extends React.Component {
             <Heading size={10} fit caps lineHeight={1} textColor="rx">
               Building your own Observable
             </Heading>
-            <Heading size={1} fit caps textColor="rx">
+            <Heading size={1} fit caps>
                Understanding how Rx works by reimplementation
             </Heading>
-            <Text textColor="secondary" textSize="1.5em" margin="20px 0px 0px" bold>aviv@soluto.com</Text>
           </Slide>
           <Slide transition={["slide"]}>
             <Heading size={2} caps textColor="secondary" textFont="primary">
               About me
             </Heading>
-            <List>
-              <ListItem>Software Engineer at Soluto 💻</ListItem>
-              <Appear><ListItem>Interested in music 🎵, technology 💾, and I'd like to learn how to knit one day 💈</ListItem></Appear>
-              <Appear><ListItem>Currently playing way too much Overwatch 🎮</ListItem></Appear>
-              <Appear><ListItem>...Recently discovered emojis</ListItem></Appear>
-            </List>
+            <Appear>
+              <Text size={2} caps textColor="secondary" textFont="primary" textsize={50}>
+                @AvivRubys (GitHub, Twitter)<br/>
+                aviv@soluto.com (Mail)<br/>
+                Aviv Rozenboim (Life)
+              </Text>
+            </Appear>
+            <Appear>
+              <List>
+                <ListItem textSize={30}>Software Engineer at Soluto 💻</ListItem>
+                <Appear><ListItem textSize={30}>Interested in music 🎵, technology 💾, and I'd like to learn how to knit one day 💈</ListItem></Appear>
+                <Appear><ListItem textSize={30}>Playing way too much Overwatch 🎮</ListItem></Appear>
+                <Appear><ListItem textSize={30}>...Recently discovered emoji</ListItem></Appear>
+              </List>
+            </Appear>
           </Slide>
-          <Slide notes="What's the basic unit of operation in Rx?">
-            <Heading caps textColor="secondary" textFont="primary">
-              <strike>Observables</strike>
-            </Heading><br/>
+          <Slide notes="Observables are defined by observers, which are defined by callbacks">
+            <Heading>Basic logical unit</Heading>
+            <Appear>
+              <Heading caps textColor="secondary" textFont="primary">
+                <strike>Observables</strike>
+              </Heading>
+            </Appear>
             <Appear>
               <Heading caps textColor="secondary" textFont="primary">
                 <strike>Observers</strike>
               </Heading>
-            </Appear><br/>
+            </Appear>
             <Appear>
               <Heading caps fit textColor="secondary" textFont="primary">
                 Callbacks
@@ -156,64 +167,63 @@ export default class Presentation extends React.Component {
             </Appear>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary" notes="Everyone's first callback">
-              <div>
-                <Heading size={6} textColor="secondary">Our first callbacks</Heading>
-                <Runner code={require("raw!../assets/callbacks-introduction/simple-callbacks.js.asset").split("###")} maxLines={8}
-                  imports={{
-                    getButton: ({elems: {documentCallbackButton}}) => documentCallbackButton,
-                    appendLine: ({elems: {documentCallbackOutput}}, line) => appendLine(documentCallbackOutput, line)
-                  }}>
-                  <DomOutput>
-                    <button id="documentCallbackButton">Click me</button>
-                    <pre style={{maxHeight: 200, overflow: "auto"}} id="documentCallbackOutput"></pre>
-                  </DomOutput>
-                </Runner>
-              </div>
+            <div>
+              <Heading size={6} textColor="secondary">Our first callbacks</Heading>
+              <Runner code={require("raw!../assets/callbacks-introduction/simple-callbacks.js.asset").split("###")} maxLines={8}
+                imports={{
+                  getButton: ({elems: {documentCallbackButton}}) => documentCallbackButton,
+                  appendLine: ({elems: {documentCallbackOutput}}, line) => appendLine(documentCallbackOutput, line)
+                }}>
+                <DomOutput>
+                  <button id="documentCallbackButton">Click me</button>
+                  <pre style={{maxHeight: 200, overflow: "auto"}} id="documentCallbackOutput"></pre>
+                </DomOutput>
+              </Runner>
+            </div>
           </Slide>
           <Slide transition={["slide"]} bgDarken={0.75}>
-            <Text size={1} textColor="secondary" >
-                Extracting a general interface for callbacks
-             </Text>
-             <Text textColor="secondary">
-                Requires three handlers:
-             </Text>
-             <Appear>
-              <List>
-                <ListItem>Next piece of data</ListItem>
-                <ListItem>Processing error</ListItem>
-                <ListItem>EOF</ListItem>
-              </List>
-             </Appear>
+            <Heading textSize={60} textColor="secondary">
+                General data interface
+            </Heading>
+            <Appear>
+            <List>
+              <ListItem>Next piece of data</ListItem>
+              <ListItem>Processing error</ListItem>
+              <ListItem>EOF</ListItem>
+            </List>
+            </Appear>
           </Slide>
-          <Slide transition={["slide"]} bgDarken={0.75} notes="Change getSomeData to subscribe">
+          <Slide transition={["slide"]} bgDarken={0.75} notes="Change getSomeData to subscribe. Callbacks don't mean working asynchronously.">
             <Runner code={require("raw!../assets/callbacks-introduction/generalizing.js.asset").split("###")} maxLines={18}
               imports={{
-                fetch: () => new Promise((resolve) => setTimeout(() => resolve("Hello 🐣"), 1000)),
+                fetch: () => new Promise((resolve) => setTimeout(() => resolve("Hello 🐣"), 1500)),
                 getPrintingObserver
               }}>
               <ConsoleOutput />
             </Runner>
           </Slide>
-          <Slide transition={["slide"]} bgDarken={0.75} notes="Even though the Observable is running the show, the Observer's api dictates everything">
-            <Heading caps size={2} textColor="secondary">
-                Conclusions
-             </Heading>
-             <List>
-              <ListItem>Observer = Callback handler</ListItem>
-              <ListItem>Observable = Data provider to an observer</ListItem>
-             </List>
+          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="This is why Rx is used a lot on backend programming - implementation can be sync, async, streaming, and it still works">
+            <Heading caps>Pros</Heading>
+            <Appear>
+              <List>
+                <ListItem>Common abstraction for any sync &nbsp; or async operation</ListItem>
+                <ListItem>Abstraction hides the source</ListItem>
+              </List>
+            </Appear>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading caps>What did we lose?</Heading>
-            <List>
-              <ListItem>Collection tools<br/>
-                <List>
-                  <ListItem>&nbsp;&nbsp;Map</ListItem>
-                  <ListItem>&nbsp;&nbsp;Filter</ListItem>
-                  <ListItem>&nbsp;&nbsp;ForEach</ListItem>
-                </List>
-              </ListItem>
-            </List>
+            <Heading caps>Cons</Heading>
+            <Appear>
+              <List>
+                <ListItem>Collection tools<br/>
+                  <List>
+                    <ListItem>&nbsp;&nbsp;Map</ListItem>
+                    <ListItem>&nbsp;&nbsp;Filter</ListItem>
+                    <ListItem>&nbsp;&nbsp;ForEach</ListItem>
+                  </List>
+                </ListItem>
+              </List>
+            </Appear>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary" notes="We lost utility we used to have, so let's see how we use collection operators on observables">
             <Heading size={4} textColor="secondary" caps>Collection operators</Heading>
