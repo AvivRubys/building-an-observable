@@ -3,8 +3,6 @@ import React, {Component} from "react";
 import Runner from "./helpers/Runner";
 import ConsoleOutput from "./helpers/outputs/Console";
 import DomOutput from "./helpers/outputs/Dom";
-import Rx, {Observable, Subject} from "rx";
-import { createComponent, createEventHandler } from "rx-recompose";
 import ReactDOM from "react-dom";
 import "rx-dom";
 require("./index.css");
@@ -33,67 +31,12 @@ import {
 // Import image preloader util
 import preloader from "spectacle/lib/utils/preloader";
 
-// Import theme
-import createTheme from "spectacle/lib/themes/default";
-
-// Import custom component
-import Interactive from "../assets/interactive";
-
 // Require CSS
 require("normalize.css");
 require("spectacle/lib/themes/default/index.css");
 
-const images = {
-  city: require("../assets/city.jpg"),
-  kat: require("../assets/kat.png"),
-  logo: require("../assets/formidable-logo.svg"),
-  markdown: require("../assets/markdown.png")
-};
-
-preloader(images);
-
-// const theme = createTheme({
-//   background: "#555a5f",
-//   primary: "#555a5f",
-//   secondary: "white",
-//   rx: "#dddddd"
-// });
-
 import {theme} from 'spectacle-theme-solarized-dark';
 
-const RxImports = {Rx, Observable, Subject};
-const ReactImports = {React, ReactDOM, Component};
-const RecomposeImports = { createComponent, createEventHandler };
-const stockSources = require("raw!../assets/stocks/stocks.js.asset").split("###");
-const getTranslationUrl = (text) => `https://api-platform.systran.net/translation/text/translate?input=${text}&source=en&target=it&withSource=false&withAnnotations=false&backTranslation=false&encoding=utf-8&key=53db3c6e-55f4-4f0f-971c-ea17891d5d16`;
-const translateImports = {
-  ...RxImports,
-  translateAsync: (text) => Observable.fromPromise(
-   () => fetch(getTranslationUrl(text))
-        .then((res) => res.json())
-        .then((res) => res.outputs[0].output)),
-  appendLine: (el, line) => el.textContent = line + "\n" + el.textContent
-};
-const stocksImports = {
-  ...RxImports,
-  ...ReactImports,
-  WHITE: "#ffffff",
-  RED: "#ff0000",
-  GREEN: "#00ff00",
-  calculateDiff(oldStock, newStock) {
-    return (oldStock && oldStock.price) && Math.round( (
-    (newStock.price - oldStock.price) / newStock.price) * 1000000) * 0.0001;
-  },
-  fetchStockData(symbol) {
-    const url = "http://cors.io/?u=" + encodeURIComponent(`http://finance.google.com/finance/info?client=ig&q=${symbol}`);
-    const extractPrice = (txt) => parseFloat(JSON.parse(txt.substr(3))[0].l.replace(/,/g, ""));
-    return Observable.fromPromise(() =>
-      fetch(url)
-      .then(res => res.text())
-      .then(txt => ({symbol, price:extractPrice(txt)}))
-    );
-  }
-};
 
 function appendLine(element, line) {
   element.textContent = line + "\n" + element.textContent;
@@ -109,6 +52,20 @@ function getPrintingObserver(context) {
     },
     complete() {
         context.log("Done!")
+    }
+  }
+}
+
+function getDOMPrintingObserver(element) {
+  return {
+    next(data) {
+        appendLine(element, data);
+    },
+    error(error) {
+        appendLine(element, error);
+    },
+    complete() {
+        appendLine(element, "Done!");
     }
   }
 }
@@ -172,7 +129,7 @@ export default class Presentation extends React.Component {
             </Heading>
             <Text textColor="secondary" textSize="1.5em" margin="20px 0px 0px" bold>aviv@soluto.com</Text>
           </Slide>
-          <Slide transition={["slide"]} notes="">
+          <Slide transition={["slide"]}>
             <Heading size={2} caps textColor="secondary" textFont="primary">
               About me
             </Heading>
@@ -183,7 +140,7 @@ export default class Presentation extends React.Component {
               <Appear><ListItem>...Recently discovered emojis</ListItem></Appear>
             </List>
           </Slide>
-          <Slide>
+          <Slide notes="What's the basic unit of operation in Rx?">
             <Heading caps textColor="secondary" textFont="primary">
               <strike>Observables</strike>
             </Heading><br/>
@@ -271,7 +228,7 @@ export default class Presentation extends React.Component {
                 getPrintingObserver,
                 mapOperator,
                 filterOperator,
-                createObservable: (subscribe) => ({subscribe})
+                createObservable: (subscribe) => ({subscribe, map: mapOperator, filter: filterOperator})
               }}>
               <ConsoleOutput />
            </Runner>

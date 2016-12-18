@@ -1,8 +1,0 @@
-let DOMContainer = getAppContainer(context)
-let RxComponent = Observable
-    .interval(1000)
-    .map(()=>
-        (<div>{new Date().toLocaleString()}</div>))
-
-RxComponent
-.subscribe(comp=> ReactDOM.render(comp, DOMContainer))

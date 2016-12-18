@@ -65,7 +65,7 @@ function createObservable(subscribe) {
 }
 
 let arrayObservable = createObservable(
-    function (output) {
+    function subscribe(output) {
         [1,2,3,4,5,6,7,8].forEach(output.next)
         output.complete()
     }
@@ -82,7 +82,7 @@ function createObservable(subscribe) {
 }
 
 let fetchObservable = createObservable(
-    function (output) {
+    function subscribe(output) {
         fetch('www.chickenemojis.com')
             .then(output.next)
             .catch(output.error);

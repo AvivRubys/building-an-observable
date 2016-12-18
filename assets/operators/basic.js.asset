@@ -9,7 +9,7 @@ function myOperator() {
 function myOperator() {
   let inputObservable = this;
   let outputObservable = createObservable(
-    function (outputObserver) {
+    function subscribe(outputObserver) {
       inputObservable.subscribe({
         next: outputObserver.next,
         error: outputObserver.error,
@@ -24,7 +24,7 @@ function myOperator() {
 function mapOperator(transformFn) {
   let inputObservable = this;
   let outputObservable = createObservable(
-    function (outputObserver) {
+    function subscribe(outputObserver) {
       inputObservable.subscribe({
         next: function (x) {
           let y = transformFn(x)
@@ -42,7 +42,7 @@ function mapOperator(transformFn) {
 function filterOperator(predicateFn) {
   let inputObservable = this;
   let outputObservable = createObservable(
-    function (outputObserver) {
+    function subscribe(outputObserver) {
       inputObservable.subscribe({
         next: function (x) {
           if (predicateFn(x)) {
@@ -69,7 +69,7 @@ function createObservable(subscribe) {
 }
 
 let arrayObservable = createObservable(
-    function (output) {
+    function subscribe(output) {
         [1,2,3,4,5,6,7,8].forEach(output.next)
         output.complete()
     }
@@ -79,3 +79,16 @@ arrayObservable
     //.map(x => x * 2)
     //.filter(x => x !== 6)
     .subscribe(observer)
+###
+let observer = getPrintingObserver(context);
+
+let clickObservable = createObservable(
+  function subscribe(output) {
+    document.addEventListener('click', output.next)
+  }
+);
+
+clickObservable
+  //.map(event => event.x)
+  //.filter(x => x > 600)
+  .subscribe(observer)
