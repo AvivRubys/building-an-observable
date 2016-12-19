@@ -112,21 +112,14 @@ export default class Presentation extends React.Component {
             <Heading size={1} fit caps>
                Understanding how Rx works by reimplementation
             </Heading>
-          </Slide>
-          <Slide>
-            <Heading>Agenda</Heading>
-            <List>
-              <ListItem>Processing data with observers</ListItem>
-              <ListItem>Operators</ListItem>
-              <ListItem>Subscribe chain</ListItem>
-            </List>
+            <Text caps>Aviv Rozenboim</Text>
           </Slide>
           <Slide transition={["slide"]}>
-            <Heading size={2} caps textColor="secondary" textFont="primary">
+            <Heading caps>
               About me
             </Heading>
             <Appear>
-              <Text size={2} caps textColor="secondary" textFont="primary" textsize={50}>
+              <Text size={2} caps textColor="quartenary" textFont="primary" textsize={50}>
                 @AvivRubys (GitHub, Twitter)<br/>
                 aviv@soluto.com (Mail)<br/>
                 Aviv Rozenboim (Life)
@@ -137,12 +130,28 @@ export default class Presentation extends React.Component {
                 <ListItem textSize={30}>Software Engineer at Soluto 💻</ListItem>
                 <Appear><ListItem textSize={30}>Interested in music 🎵, technology 💾 & stuff 🗺</ListItem></Appear>
                 <Appear><ListItem textSize={30}>Playing way too much Overwatch 🎮</ListItem></Appear>
-                <Appear><ListItem textSize={30}>...Recently discovered emoji</ListItem></Appear>
+                <Appear><ListItem textSize={30}>...Recently discovered emoji 🍯 🙅 👾 👘</ListItem></Appear>
               </List>
             </Appear>
           </Slide>
+          <Slide notes="Who has experience with these things?">
+            <Heading fit caps>Testing the crowd</Heading>
+            <List>
+              <ListItem>Any version of Rx</ListItem>
+              <Appear><ListItem>Javascript</ListItem></Appear>
+              <Appear><ListItem>RxJS</ListItem></Appear>
+            </List>
+          </Slide>
+          <Slide>
+            <Heading caps>Agenda</Heading>
+            <List>
+              <ListItem>Processing data with observers</ListItem>
+              <ListItem>Operators</ListItem>
+              <ListItem>Subscribe chain</ListItem>
+            </List>
+          </Slide>
           <Slide notes="Observables are defined by observers, which are defined by callbacks">
-            <Heading>Basic logical unit</Heading>
+            <Heading fit>Basic logical unit</Heading>
             <Appear>
               <Heading caps textColor="secondary" textFont="primary">
                 <strike>Observables</strike>
@@ -159,10 +168,10 @@ export default class Presentation extends React.Component {
               </Heading>
             </Appear>
           </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="Everyone's first callback">
+          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="Mention fetch is a promise">
             <div>
-              <Heading size={6} textColor="secondary">Our first callbacks</Heading>
-              <Runner code={require("raw!../assets/callbacks-introduction/simple-callbacks.js.asset").split("###")} maxLines={8}
+              <Heading fit>Our first callbacks</Heading>
+              <Runner code={require("raw!../assets/callbacks-introduction/simple-callbacks.js.asset").split("###")} maxLines={9}
                 imports={{
                   getButton: ({elems: {documentCallbackButton}}) => documentCallbackButton,
                   appendLine: ({elems: {documentCallbackOutput}}, line) => appendLine(documentCallbackOutput, line)
@@ -175,7 +184,7 @@ export default class Presentation extends React.Component {
             </div>
           </Slide>
           <Slide transition={["slide"]} bgDarken={0.75}>
-            <Heading textSize={60} textColor="secondary">
+            <Heading textSize={60} fit>
                 General data interface
             </Heading>
             <Appear>
@@ -186,7 +195,7 @@ export default class Presentation extends React.Component {
             </List>
             </Appear>
           </Slide>
-          <Slide transition={["slide"]} bgDarken={0.75} notes="Change getSomeData to subscribe. Callbacks don't mean working asynchronously.">
+          <Slide transition={["slide"]} bgDarken={0.75} notes="Introduce sequentially. Change getSomeData to subscribe. Callbacks don't mean working asynchronously.">
             <Runner code={require("raw!../assets/callbacks-introduction/generalizing.js.asset").split("###")} maxLines={18}
               imports={{
                 fetch: () => new Promise((resolve) => setTimeout(() => resolve("Hello 🐣"), 1500)),
@@ -204,7 +213,7 @@ export default class Presentation extends React.Component {
               </List>
             </Appear>
           </Slide>
-          <Slide transition={["zoom", "fade"]} bgColor="primary">
+          <Slide transition={["zoom", "fade"]} bgColor="primary" notes="Cons of this naive rx implementation, not of rx itself.">
             <Heading caps>Cons</Heading>
             <Appear>
               <List>
@@ -219,7 +228,7 @@ export default class Presentation extends React.Component {
             </Appear>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary" notes="We lost utility we used to have, so let's see how we use collection operators on observables">
-            <Heading size={4} textColor="secondary" caps>Collection operators</Heading>
+            <Heading fit caps>Collection operators</Heading>
             <Runner maxLines={10} code={require("raw!../assets/operators/collection.js.asset").split("###")}>
               <ConsoleOutput />
            </Runner>
@@ -237,13 +246,12 @@ export default class Presentation extends React.Component {
            </Runner>
           </Slide>
           <Slide transition={["slide"]}>
-            <Heading caps size={2} textColor="secondary">
-                Operators
-             </Heading>
+            <Heading fit>Operators</Heading>
              <List>
               <ListItem>TakeN/SkipN</ListItem>
               <ListItem>Combining observables</ListItem>
-              <ListItem>FlatMap</ListItem>
+              <ListItem>Flattening observables</ListItem>
+              <ListItem>And many more</ListItem>
              </List>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
