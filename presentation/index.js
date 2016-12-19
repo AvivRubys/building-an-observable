@@ -37,7 +37,6 @@ require("spectacle/lib/themes/default/index.css");
 
 import {theme} from 'spectacle-theme-solarized-dark';
 
-
 function appendLine(element, line) {
   element.textContent = line + "\n" + element.textContent;
 }
@@ -52,20 +51,6 @@ function getPrintingObserver(context) {
     },
     complete() {
         context.log("Done!")
-    }
-  }
-}
-
-function getDOMPrintingObserver(element) {
-  return {
-    next(data) {
-        appendLine(element, data);
-    },
-    error(error) {
-        appendLine(element, error);
-    },
-    complete() {
-        appendLine(element, "Done!");
     }
   }
 }
@@ -128,6 +113,14 @@ export default class Presentation extends React.Component {
                Understanding how Rx works by reimplementation
             </Heading>
           </Slide>
+          <Slide>
+            <Heading>Agenda</Heading>
+            <List>
+              <ListItem>Processing data with observers</ListItem>
+              <ListItem>Operators</ListItem>
+              <ListItem>Subscribe chain</ListItem>
+            </List>
+          </Slide>
           <Slide transition={["slide"]}>
             <Heading size={2} caps textColor="secondary" textFont="primary">
               About me
@@ -142,7 +135,7 @@ export default class Presentation extends React.Component {
             <Appear>
               <List>
                 <ListItem textSize={30}>Software Engineer at Soluto 💻</ListItem>
-                <Appear><ListItem textSize={30}>Interested in music 🎵, technology 💾, and I'd like to learn how to knit one day 💈</ListItem></Appear>
+                <Appear><ListItem textSize={30}>Interested in music 🎵, technology 💾 & stuff 🗺</ListItem></Appear>
                 <Appear><ListItem textSize={30}>Playing way too much Overwatch 🎮</ListItem></Appear>
                 <Appear><ListItem textSize={30}>...Recently discovered emoji</ListItem></Appear>
               </List>
@@ -245,16 +238,16 @@ export default class Presentation extends React.Component {
           </Slide>
           <Slide transition={["slide"]}>
             <Heading caps size={2} textColor="secondary">
-                Operators as pure functions
+                Operators
              </Heading>
              <List>
-              <Appear><ListItem>TakeN/SkipN</ListItem></Appear>
-              <Appear><ListItem>Combining observables</ListItem></Appear>
-              <Appear><ListItem>FlatMap</ListItem></Appear>
+              <ListItem>TakeN/SkipN</ListItem>
+              <ListItem>Combining observables</ListItem>
+              <ListItem>FlatMap</ListItem>
              </List>
           </Slide>
           <Slide transition={["zoom", "fade"]} bgColor="primary">
-            <Heading caps fit>Questions</Heading>
+            <Heading caps fit>Questions? 🤔</Heading>
           </Slide>
         </Deck>
       </Spectacle>
